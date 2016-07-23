@@ -22,18 +22,30 @@ class TableViewCell: UITableViewCell {
                 itemTitleLabel.text = item?.name
                 itemDescLabel.text = item?.comment
                 
-                Nuke.taskWith(NSURL(string: (item?.image)!)!) { response in
-                    switch response {
-                    case let .Success(image, _):
-                        //do something with your image
-                        self.iconView.image = image
-                    
-                    case let .Failure(error):
-                        //handle the error case
-                        print(error)
-                    }
-                    }.resume()
-//                iconView.image = 
+                let imageURL = NSURL(string: (item?.image)!)!
+                let imageRequest = NSURLRequest(URL: imageURL)
+                    //ImageRequest(URL: imageURL)
+                let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(imageRequest)
+
+                // Check image in cache
+                guard cachedResponse != nil else {
+                    // Get image from URL
+                    Nuke.taskWith(imageURL) { response in
+                        switch response {
+                        case let .Success(image, _):
+                            //do something with your image
+                            self.iconView.image = image
+                            
+                        case let .Failure(error):
+                            //handle the error case
+                            print(error)
+                        }
+                        }.resume()
+
+                    return
+                }
+                
+                iconView.image = UIImage(data: (cachedResponse?.data)!)
             }
         }
     }

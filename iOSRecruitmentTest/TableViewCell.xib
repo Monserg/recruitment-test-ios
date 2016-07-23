@@ -52,6 +52,7 @@
                     <constraint firstItem="XiC-59-hlY" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="-9" id="lnd-ch-SbW"/>
                 </constraints>
             </tableViewCellContentView>
+            <inset key="separatorInset" minX="60" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
                 <outlet property="iconView" destination="HrZ-NB-cpL" id="UnC-I5-sjZ"/>
                 <outlet property="itemDescLabel" destination="uLS-fp-tad" id="zhs-Qw-u9I"/>
