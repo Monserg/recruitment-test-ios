@@ -23,25 +23,19 @@
                         <constraint firstAttribute="height" constant="44" id="AN3-gC-vpv"/>
                     </constraints>
                     <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="95S-it-KJO"/>
-                    </connections>
                 </searchBar>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nf9-A8-L41">
                     <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <connections>
-                        <outlet property="dataSource" destination="-1" id="jyg-8U-1Vz"/>
-                    </connections>
                 </tableView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="nf9-A8-L41" secondAttribute="trailing" id="4vX-5z-P11"/>
                 <constraint firstItem="nf9-A8-L41" firstAttribute="top" secondItem="pcO-sR-wJg" secondAttribute="bottom" id="6Wg-3x-iph"/>
-                <constraint firstItem="pcO-sR-wJg" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="20" id="H6R-f4-SWs"/>
                 <constraint firstAttribute="trailing" secondItem="pcO-sR-wJg" secondAttribute="trailing" id="UIq-H9-paW"/>
                 <constraint firstAttribute="bottom" secondItem="nf9-A8-L41" secondAttribute="bottom" id="iWw-Ho-hcb"/>
+                <constraint firstItem="pcO-sR-wJg" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="20" id="kXJ-rQ-Bbh"/>
                 <constraint firstItem="nf9-A8-L41" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="l7B-NB-fcg"/>
                 <constraint firstItem="pcO-sR-wJg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="qjE-e9-qgd"/>
             </constraints>

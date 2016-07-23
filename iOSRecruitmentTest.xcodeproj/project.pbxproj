@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		5765223E536573ED6E8510ED /* Pods_iOSRecruitmentTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33017D018EE70C603E1C1CFD /* Pods_iOSRecruitmentTest.framework */; };
+		B1441DCC1D432C0300EB8C97 /* Item+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1441DCA1D432C0300EB8C97 /* Item+CoreDataProperties.swift */; };
+		B1441DCD1D432C0300EB8C97 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1441DCB1D432C0300EB8C97 /* Item.swift */; };
+		B1441DCF1D432D3900EB8C97 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1441DCE1D432D3900EB8C97 /* CoreDataManager.swift */; };
 		D93FDE421D114DEA00AB8D9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93FDE411D114DEA00AB8D9B /* AppDelegate.swift */; };
 		D93FDE4A1D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D93FDE481D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodeld */; };
 		D93FDE4C1D114DEA00AB8D9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D93FDE4B1D114DEA00AB8D9B /* Assets.xcassets */; };
@@ -21,6 +24,9 @@
 /* Begin PBXFileReference section */
 		33017D018EE70C603E1C1CFD /* Pods_iOSRecruitmentTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSRecruitmentTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		42DFA03D40D33A45F08DB54E /* Pods-iOSRecruitmentTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSRecruitmentTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iOSRecruitmentTest/Pods-iOSRecruitmentTest.debug.xcconfig"; sourceTree = "<group>"; };
+		B1441DCA1D432C0300EB8C97 /* Item+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Item+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B1441DCB1D432C0300EB8C97 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		B1441DCE1D432D3900EB8C97 /* CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		D93FDE3E1D114DEA00AB8D9B /* iOSRecruitmentTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSRecruitmentTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D93FDE411D114DEA00AB8D9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D93FDE491D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = iOSRecruitmentTest.xcdatamodel; sourceTree = "<group>"; };
@@ -63,6 +69,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B1441DC91D43257E00EB8C97 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				B1441DCA1D432C0300EB8C97 /* Item+CoreDataProperties.swift */,
+				B1441DCB1D432C0300EB8C97 /* Item.swift */,
+				B1441DCE1D432D3900EB8C97 /* CoreDataManager.swift */,
+				D93FDE481D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodeld */,
+			);
+			name = "Core Data";
+			sourceTree = "<group>";
+		};
 		D93FDE351D114DEA00AB8D9B = {
 			isa = PBXGroup;
 			children = (
@@ -84,6 +101,7 @@
 		D93FDE401D114DEA00AB8D9B /* iOSRecruitmentTest */ = {
 			isa = PBXGroup;
 			children = (
+				B1441DC91D43257E00EB8C97 /* Core Data */,
 				D93FDE5A1D114F9300AB8D9B /* TableViewCell.swift */,
 				D93FDE5B1D114F9300AB8D9B /* TableViewCell.xib */,
 				D93FDE561D114E7A00AB8D9B /* ViewController.swift */,
@@ -91,7 +109,6 @@
 				D93FDE411D114DEA00AB8D9B /* AppDelegate.swift */,
 				D93FDE4B1D114DEA00AB8D9B /* Assets.xcassets */,
 				D93FDE501D114DEA00AB8D9B /* Info.plist */,
-				D93FDE481D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodeld */,
 				D93FDE5E1D11517400AB8D9B /* Launch Screen.storyboard */,
 			);
 			path = iOSRecruitmentTest;
@@ -224,6 +241,9 @@
 				D93FDE5C1D114F9300AB8D9B /* TableViewCell.swift in Sources */,
 				D93FDE4A1D114DEA00AB8D9B /* iOSRecruitmentTest.xcdatamodeld in Sources */,
 				D93FDE421D114DEA00AB8D9B /* AppDelegate.swift in Sources */,
+				B1441DCD1D432C0300EB8C97 /* Item.swift in Sources */,
+				B1441DCF1D432D3900EB8C97 /* CoreDataManager.swift in Sources */,
+				B1441DCC1D432C0300EB8C97 /* Item+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
