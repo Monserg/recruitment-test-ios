@@ -41,7 +41,7 @@ class CoreDataManager {
         var failureReason = "There was an error creating or loading the application's saved data."
         
         do {
-            try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+            try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true])
         } catch {
             // Report any error we got.
             var dict = [String: AnyObject]()
@@ -67,7 +67,8 @@ class CoreDataManager {
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
-       
+        managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
         return managedObjectContext
     }()
     
@@ -93,7 +94,7 @@ class CoreDataManager {
     // MARK: - Custom Functions
     // Entity for Name
     func entityForName(entityName: String) -> NSEntityDescription {
-        return NSEntityDescription.entityForName(entityName, inManagedObjectContext: self.managedObjectContext)!
+        return NSEntityDescription.entityForName(entityName, inManagedObjectContext: managedObjectContext)!
     }
     
     // Fetched Results Controller for Entity Name
@@ -105,6 +106,17 @@ class CoreDataManager {
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataManager.instance.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         
         return fetchedResultsController
+    }
+    
+    func updateEntities() {
+        let fetchRequest = NSFetchRequest(entityName: "Item")
+        
+        do {
+            try managedObjectContext.executeFetchRequest(fetchRequest)
+            saveContext()
+        } catch {
+            print(#function + ": \(error)")
+        }
     }
 }
 

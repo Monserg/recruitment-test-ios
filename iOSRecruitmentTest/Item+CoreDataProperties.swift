@@ -16,6 +16,6 @@ extension Item {
     // MARK: - Properties
     @NSManaged var name: String
     @NSManaged var comment: String?
-    @NSManaged var image: String?
+    @NSManaged var imageURL: String?
     @NSManaged var id: NSNumber
 }

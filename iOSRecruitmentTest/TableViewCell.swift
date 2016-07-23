@@ -22,7 +22,7 @@ class TableViewCell: UITableViewCell {
                 itemTitleLabel.text = item?.name
                 itemDescLabel.text = item?.comment
                 
-                let imageURL = NSURL(string: (item?.image)!)!
+                let imageURL = NSURL(string: (item?.imageURL)!)!
                 let imageRequest = NSURLRequest(URL: imageURL)
                     //ImageRequest(URL: imageURL)
                 let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(imageRequest)

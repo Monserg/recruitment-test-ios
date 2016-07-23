@@ -16,10 +16,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
+    var fetchedResultsController: NSFetchedResultsController?
     var refreshControl: UIRefreshControl!
-    var items = [Item]()
-    
+    var searchPredicate: NSPredicate?
+
     
     // MARK: - Class Functions
     override func viewDidLoad() {
@@ -38,30 +38,33 @@ class ViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
-        fetchedResultsController.delegate = self
+        
+        // Create 
+        loadDataFromCoreData()
         
         // Get items
-        guard fetchedResultsController.fetchedObjects != nil else {
+        guard fetchedResultsController?.fetchedObjects?.count > 0 else {
             print("Core Data is empty.")
             
-            // Get data from localhost
-            self.receiveDataFromLocalHost()
+            loadDataFromLocalHost()
             
             return
         }
-        
-        items = fetchedResultsController.fetchedObjects as! [Item]
     }
     
     
     // MARK: - Custom Functions
-    func receiveDataFromLocalHost() {
+    func loadDataFromLocalHost() {
         Alamofire.request(.GET, "http://localhost:8080/api/items", parameters: nil).responseArray(Item.self) { (response) in
             switch response.result {
-            case .Success(let item):
-                print("item = \(item)")
-                self.items = item
-                self.tableView.reloadData()
+            case .Success:
+                // Core Data: manipulate
+               dispatch_async(dispatch_get_main_queue()) {
+                    // Core Data: add entities
+                    CoreDataManager.instance.saveContext()
+                
+                    self.loadDataFromCoreData()
+                }
                 
             case .Failure(let error):
                 print("Error = \(error)")
@@ -69,12 +72,30 @@ class ViewController: UIViewController {
         }
     }
     
+    func loadDataFromCoreData() {
+        if fetchedResultsController == nil {
+            fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
+            
+            // Delegate
+            fetchedResultsController!.delegate = self
+        }
+        
+        fetchedResultsController?.fetchRequest.predicate = searchPredicate
+        
+        do {
+            try fetchedResultsController!.performFetch()
+            
+            tableView.reloadData()
+        } catch {
+            print("Fetch failed")
+        }
+    }
+
     func refresh(sender: AnyObject) {
         refreshBegin("Refresh", refreshEnd: { (x: Int) -> () in
-            self.items = [Item]()
             NSURLCache.sharedURLCache().removeAllCachedResponses()
             
-            self.receiveDataFromLocalHost()
+            self.loadDataFromLocalHost()
             self.refreshControl.endRefreshing()
         })
     }
@@ -90,20 +111,23 @@ class ViewController: UIViewController {
             }
         }
     }
-
 }
 
 
 // MARK: - UITableViewDataSource
 extension ViewController: UITableViewDataSource {
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        if let sections = fetchedResultsController?.sections {
+            return sections[section].numberOfObjects
+        } else {
+            return 0
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TableViewCell") as! TableViewCell
         
-        cell.item = items[indexPath.row]
+        cell.item = fetchedResultsController?.objectAtIndexPath(indexPath) as? Item
         
         return cell
     }
@@ -114,13 +138,42 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        
+        if searchBar.isFirstResponder() {
+            searchBar.resignFirstResponder()
+            searchPredicate = nil
+            
+            loadDataFromCoreData()
+        }
     }
 }
 
 
 // MARK: - UISearchBarDelegate
 extension ViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        let attribute = "id"
+        let filterValue = searchBar.text
+
+        if let text = filterValue {
+            searchPredicate = NSPredicate(format: "%K CONTAINS[c] %@", attribute, text)
+        }
+        
+        loadDataFromCoreData()
+        
+        searchBar.resignFirstResponder()
+    }
     
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            searchPredicate = nil
+            
+            loadDataFromCoreData()
+            
+            // Hide keyboard
+            searchBar.performSelector(#selector(resignFirstResponder), withObject: nil, afterDelay: 0.1)
+        }
+    }
 }
 
 
@@ -131,6 +184,13 @@ extension ViewController: NSFetchedResultsControllerDelegate {
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+            
+        default:
+            break
+        }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {

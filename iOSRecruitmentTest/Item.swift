@@ -22,34 +22,12 @@ class Item: NSManagedObject, Decodable {
         parsing(json)
     }
     
+    
+    // MARK: - Custom Functions
     func parsing(json: JSON) {
         self.id = ("id" <~~ json)!
         self.name = ("name" <~~ json)!
         self.comment = ("description" <~~ json)!
-        self.image = ("icon" <~~ json)!
+        self.imageURL = ("icon" <~~ json)!
     }
-
-    
-    
-//    init(name: String, comment: String, image: String, id: NSNumber) {
-//        self.init()
-//        
-//        self.name = name
-//        self.comment = comment
-//        self.image = image
-//        self.id = id
-//    }
-//    
-//    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-//        super.init(entity: entity, insertIntoManagedObjectContext: context)
-//    }
-//    
-//    required convenience init?(json: JSON) {
-//        self.init(name: "xxx", comment: "xxx", image: "xxx", id: 0)
-//        
-//        self.id = ("id" <~~ json)!
-//        self.name = ("name" <~~ json)!
-//        self.comment = ("description" <~~ json)!
-//        self.image = ("icon" <~~ json)!
-//    }
 }
