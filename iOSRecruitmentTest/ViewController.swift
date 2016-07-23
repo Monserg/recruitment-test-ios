@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     var fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
     var refreshControl: UIRefreshControl!
-    var items = [Value]()
+    var items = [Item]()
     
     
     // MARK: - Class Functions
@@ -50,13 +50,13 @@ class ViewController: UIViewController {
             return
         }
         
-        items = fetchedResultsController.fetchedObjects as! [Value]
+        items = fetchedResultsController.fetchedObjects as! [Item]
     }
     
     
     // MARK: - Custom Functions
     func receiveDataFromLocalHost() {
-        Alamofire.request(.GET, "http://localhost:8080/api/items", parameters: nil).responseArray(Value.self) { (response) in
+        Alamofire.request(.GET, "http://localhost:8080/api/items", parameters: nil).responseArray(Item.self) { (response) in
             switch response.result {
             case .Success(let item):
                 print("item = \(item)")
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
     
     func refresh(sender: AnyObject) {
         refreshBegin("Refresh", refreshEnd: { (x: Int) -> () in
-            self.items = [Value]()
+            self.items = [Item]()
             NSURLCache.sharedURLCache().removeAllCachedResponses()
             
             self.receiveDataFromLocalHost()

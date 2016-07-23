@@ -11,7 +11,7 @@ import Nuke
 
 class TableViewCell: UITableViewCell {
     // MARK: - Properties
-    var item: Value? {
+    var item: Item? {
         didSet {
             if item == nil {
                 iconView.image = nil
