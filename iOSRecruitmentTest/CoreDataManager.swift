@@ -67,7 +67,7 @@ class CoreDataManager {
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
-        managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        managedObjectContext.mergePolicy = NSErrorMergePolicy //NSMergeByPropertyObjectTrumpMergePolicy
         
         return managedObjectContext
     }()
@@ -108,15 +108,17 @@ class CoreDataManager {
         return fetchedResultsController
     }
     
-    func updateEntities() {
+    func cleanCoreData() {
         let fetchRequest = NSFetchRequest(entityName: "Item")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         
         do {
-            try managedObjectContext.executeFetchRequest(fetchRequest)
-            saveContext()
+            try persistentStoreCoordinator.executeRequest(deleteRequest, withContext: managedObjectContext)
         } catch {
             print(#function + ": \(error)")
         }
+        
+        saveContext()
     }
 }
 

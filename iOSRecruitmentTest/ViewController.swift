@@ -17,8 +17,15 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var fetchedResultsController: NSFetchedResultsController?
-    var refreshControl: UIRefreshControl!
     var searchPredicate: NSPredicate?
+
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Reloading...")
+        refreshControl.addTarget(self, action: #selector(handleRefresh(_:)), forControlEvents: .ValueChanged)
+        
+        return refreshControl
+    }()
 
     
     // MARK: - Class Functions
@@ -28,10 +35,6 @@ class ViewController: UIViewController {
         tableView.registerNib(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
         
         // Add UIRefreshControl
-        refreshControl = UIRefreshControl()
-        refreshControl.attributedTitle = NSAttributedString(string: "Reloading...")
-        refreshControl.addTarget(self, action: #selector(refresh(_:)), forControlEvents: .ValueChanged)
-        
         tableView.addSubview(refreshControl)
 
         // Delegate
@@ -40,13 +43,14 @@ class ViewController: UIViewController {
         searchBar.delegate = self
         
         // Create 
-        loadDataFromCoreData()
+        loadDataFromCoreData(withReloadData: false)
         
         // Get items
         guard fetchedResultsController?.fetchedObjects?.count > 0 else {
             print("Core Data is empty.")
             
             loadDataFromLocalHost()
+            loadDataFromCoreData(withReloadData: true)
             
             return
         }
@@ -63,7 +67,7 @@ class ViewController: UIViewController {
                     // Core Data: add entities
                     CoreDataManager.instance.saveContext()
                 
-                    self.loadDataFromCoreData()
+                    //self.loadDataFromCoreData()
                 }
                 
             case .Failure(let error):
@@ -72,7 +76,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func loadDataFromCoreData() {
+    func loadDataFromCoreData(withReloadData isReload: Bool) {
         if fetchedResultsController == nil {
             fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
             
@@ -85,30 +89,29 @@ class ViewController: UIViewController {
         do {
             try fetchedResultsController!.performFetch()
             
-            tableView.reloadData()
+            if isReload {
+                tableView.reloadData()
+            }
         } catch {
             print("Fetch failed")
         }
     }
 
-    func refresh(sender: AnyObject) {
-        refreshBegin("Refresh", refreshEnd: { (x: Int) -> () in
+    func handleRefresh(refreshControl: UIRefreshControl) {
+
+        let delayInSeconds: Int64 = 2
+        let popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * Int64(NSEC_PER_SEC))
+        
+        dispatch_after(popTime, dispatch_get_main_queue()) { 
             NSURLCache.sharedURLCache().removeAllCachedResponses()
+            
+            // Core Data: delete all entities
+            CoreDataManager.instance.cleanCoreData()
+            self.loadDataFromCoreData(withReloadData: false)
             
             self.loadDataFromLocalHost()
             self.refreshControl.endRefreshing()
-        })
-    }
-    
-    func refreshBegin(newtext: String, refreshEnd: (Int) -> ()) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            print("refreshing")
-            
-            sleep(2)
-            
-            dispatch_async(dispatch_get_main_queue()) {
-                refreshEnd(0)
-            }
+            self.loadDataFromCoreData(withReloadData: true)
         }
     }
 }
@@ -143,7 +146,7 @@ extension ViewController: UITableViewDelegate {
             searchBar.resignFirstResponder()
             searchPredicate = nil
             
-            loadDataFromCoreData()
+            loadDataFromCoreData(withReloadData: true)
         }
     }
 }
@@ -159,7 +162,7 @@ extension ViewController: UISearchBarDelegate {
             searchPredicate = NSPredicate(format: "%K CONTAINS[c] %@", attribute, text)
         }
         
-        loadDataFromCoreData()
+        loadDataFromCoreData(withReloadData: true)
         
         searchBar.resignFirstResponder()
     }
@@ -168,7 +171,7 @@ extension ViewController: UISearchBarDelegate {
         if searchText.isEmpty {
             searchPredicate = nil
             
-            loadDataFromCoreData()
+            loadDataFromCoreData(withReloadData: true)
             
             // Hide keyboard
             searchBar.performSelector(#selector(resignFirstResponder), withObject: nil, afterDelay: 0.1)
@@ -187,7 +190,10 @@ extension ViewController: NSFetchedResultsControllerDelegate {
         switch type {
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
-            
+
+        case .Delete:
+            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+
         default:
             break
         }
