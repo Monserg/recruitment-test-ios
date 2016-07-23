@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import Alamofire
+import SwiftyJSON
 
 class ViewController: UIViewController {
     // MARK: - Properties
@@ -15,6 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
+    var items: [Item]!
     
     
     // MARK: - Class Functions
@@ -28,6 +31,28 @@ class ViewController: UIViewController {
         tableView.delegate = self
         searchBar.delegate = self
         fetchedResultsController.delegate = self
+        
+        // Get items
+        guard fetchedResultsController.fetchedObjects != nil else {
+            print("Core Data is empty.")
+            
+            // Get data from localhost
+            self.receiveData()
+            
+            return
+        }
+        
+        items = fetchedResultsController.fetchedObjects as! [Item]
+    }
+    
+    
+    // MARK: - Custom Functions
+    func receiveData() {
+        Alamofire.request(.GET, "http://localhost:8080/api/items").responseJSON { response in
+            let jsonValue = JSON(response.result.value!)
+            
+            print(jsonValue)
+        }
     }
 }
 
@@ -39,7 +64,7 @@ extension ViewController: UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell =  tableView.dequeueReusableCellWithIdentifier("TableViewCell") as! TableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("TableViewCell") as! TableViewCell
         
         cell.item = nil
         
@@ -50,7 +75,9 @@ extension ViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension ViewController: UITableViewDelegate {
-    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
 }
 
 
