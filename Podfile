@@ -6,8 +6,9 @@ use_frameworks!
 target 'iOSRecruitmentTest' do
 
 	pod 'Alamofire', '~> 3.4'
-	pod 'SwiftyJSON', '~> 2.3'
+	pod 'Gloss', '~> 0.7'
 	pod 'Nuke', '~> 3.1'
+    pod 'Alamofire-Gloss', '~> 1.0'
 
 end
 

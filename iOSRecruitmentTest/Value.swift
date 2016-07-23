@@ -1,33 +1,33 @@
 //
-//  Item.swift
+//  Value.swift
 //  iOSRecruitmentTest
 //
 //  Created by msm72 on 7/23/16.
 //  Copyright © 2016 Snowdog. All rights reserved.
 //
 
-import Foundation
 import CoreData
 import Gloss
 
-class Item: NSManagedObject, Decodable {
+class Value: NSObject, Decodable {
+    // MARK: - Properties
+    var name: String!
+    var comment: String?
+    var image: String?
+    var id: NSNumber!
+
+    
     // MARK: - Initialization
     init(name: String, comment: String, image: String, id: NSNumber) {
-        self.init()
+        super.init()
         
         self.name = name
         self.comment = comment
         self.image = image
         self.id = id
     }
-    
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
-    }
-    
-    required convenience init?(json: JSON) {
-        self.init(name: "xxx", comment: "xxx", image: "xxx", id: 0)
-        
+
+    required init?(json: JSON) {
         self.id = ("id" <~~ json)!
         self.name = ("name" <~~ json)!
         self.comment = ("description" <~~ json)!

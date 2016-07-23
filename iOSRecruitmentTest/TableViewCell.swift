@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import Nuke
 
 class TableViewCell: UITableViewCell {
     // MARK: - Properties
-    var item: AnyObject? {
+    var item: Value? {
         didSet {
             if item == nil {
                 iconView.image = nil
@@ -18,6 +19,21 @@ class TableViewCell: UITableViewCell {
                 itemDescLabel.text = "Some description"
             } else {
                 // TODO: Implement item sets
+                itemTitleLabel.text = item?.name
+                itemDescLabel.text = item?.comment
+                
+                Nuke.taskWith(NSURL(string: (item?.image)!)!) { response in
+                    switch response {
+                    case let .Success(image, _):
+                        //do something with your image
+                        self.iconView.image = image
+                    
+                    case let .Failure(error):
+                        //handle the error case
+                        print(error)
+                    }
+                    }.resume()
+//                iconView.image = 
             }
         }
     }

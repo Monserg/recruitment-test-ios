@@ -18,5 +18,4 @@ extension Item {
     @NSManaged var comment: String?
     @NSManaged var image: String?
     @NSManaged var id: NSNumber
-
 }

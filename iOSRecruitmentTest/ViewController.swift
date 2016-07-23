@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 import Alamofire
-import SwiftyJSON
+import Alamofire_Gloss
 
 class ViewController: UIViewController {
     // MARK: - Properties
@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
-    var items: [Item]!
+    var items = [Value]()
     
     
     // MARK: - Class Functions
@@ -42,17 +42,44 @@ class ViewController: UIViewController {
             return
         }
         
-        items = fetchedResultsController.fetchedObjects as! [Item]
+        items = fetchedResultsController.fetchedObjects as! [Value]
     }
     
     
     // MARK: - Custom Functions
     func receiveData() {
-        Alamofire.request(.GET, "http://localhost:8080/api/items").responseJSON { response in
-            let jsonValue = JSON(response.result.value!)
-            
-            print(jsonValue)
+        
+        Alamofire.request(.GET, "http://localhost:8080/api/items", parameters: nil).responseArray(Value.self) { (response) in
+            switch response.result {
+            case .Success(let item):
+                print("item = \(item)")
+                self.items = item
+                self.tableView.reloadData()
+                
+            case .Failure(let error):
+                print("Error = \(error)")
+            }
         }
+        
+        
+        //
+        //
+        //        Alamofire.request(.GET, "http://localhost:8080/api/items").responseJSON { response in
+        //            //let jsonValue = response.result.value!
+        //            let json = JSON(data: response.data!)
+        //
+        //            do {
+        //                //let jsonValue = try NSJSONSerialization.JSONObjectWithData(response.data!, options: .AllowFragments)
+        //
+        //                let itemms = [Item].fromJSONArray(json.rawArray)
+        //
+        //                //print(repoOwners)
+        //                //print(jsonValue)
+        //            } catch {
+        //                print(error)
+        //            }
+        //
+        //        }
     }
 }
 
@@ -60,13 +87,13 @@ class ViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension ViewController: UITableViewDataSource {
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return items.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TableViewCell") as! TableViewCell
         
-        cell.item = nil
+        cell.item = items[indexPath.row]
         
         return cell
     }
