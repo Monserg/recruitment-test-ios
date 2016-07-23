@@ -14,9 +14,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HrZ-NB-cpL">
+                    <imageView userInteractionEnabled="NO" contentMode="redraw" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no-image-available" translatesAutoresizingMaskIntoConstraints="NO" id="HrZ-NB-cpL">
                         <rect key="frame" x="10" y="2" width="40" height="40"/>
-                        <color key="backgroundColor" red="0.37254902719999999" green="0.23137255009999999" blue="0.15294118230000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="TtJ-uh-j5f"/>
                             <constraint firstAttribute="width" constant="40" id="YPn-C9-9Gk"/>
@@ -60,4 +60,7 @@
             </connections>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="no-image-available" width="200" height="200"/>
+    </resources>
 </document>

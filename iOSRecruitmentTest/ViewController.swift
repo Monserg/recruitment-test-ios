@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var fetchedResultsController = CoreDataManager.instance.fetchedResultsController("Item", keyForSort: "id")
+    var refreshControl: UIRefreshControl!
     var items = [Value]()
     
     
@@ -26,6 +27,13 @@ class ViewController: UIViewController {
         
         tableView.registerNib(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
         
+        // Add UIRefreshControl
+        refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Reloading...")
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), forControlEvents: .ValueChanged)
+        
+        tableView.addSubview(refreshControl)
+
         // Delegate
         tableView.dataSource = self
         tableView.delegate = self
@@ -37,7 +45,7 @@ class ViewController: UIViewController {
             print("Core Data is empty.")
             
             // Get data from localhost
-            self.receiveData()
+            self.receiveDataFromLocalHost()
             
             return
         }
@@ -47,8 +55,7 @@ class ViewController: UIViewController {
     
     
     // MARK: - Custom Functions
-    func receiveData() {
-        
+    func receiveDataFromLocalHost() {
         Alamofire.request(.GET, "http://localhost:8080/api/items", parameters: nil).responseArray(Value.self) { (response) in
             switch response.result {
             case .Success(let item):
@@ -60,27 +67,30 @@ class ViewController: UIViewController {
                 print("Error = \(error)")
             }
         }
-        
-        
-        //
-        //
-        //        Alamofire.request(.GET, "http://localhost:8080/api/items").responseJSON { response in
-        //            //let jsonValue = response.result.value!
-        //            let json = JSON(data: response.data!)
-        //
-        //            do {
-        //                //let jsonValue = try NSJSONSerialization.JSONObjectWithData(response.data!, options: .AllowFragments)
-        //
-        //                let itemms = [Item].fromJSONArray(json.rawArray)
-        //
-        //                //print(repoOwners)
-        //                //print(jsonValue)
-        //            } catch {
-        //                print(error)
-        //            }
-        //
-        //        }
     }
+    
+    func refresh(sender: AnyObject) {
+        refreshBegin("Refresh", refreshEnd: { (x: Int) -> () in
+            self.items = [Value]()
+            NSURLCache.sharedURLCache().removeAllCachedResponses()
+            
+            self.receiveDataFromLocalHost()
+            self.refreshControl.endRefreshing()
+        })
+    }
+    
+    func refreshBegin(newtext: String, refreshEnd: (Int) -> ()) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            print("refreshing")
+            
+            sleep(2)
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                refreshEnd(0)
+            }
+        }
+    }
+
 }
 
 
